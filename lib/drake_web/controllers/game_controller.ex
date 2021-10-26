@@ -1,4 +1,4 @@
-defmodule DrakeWeb.PageController do
+defmodule DrakeWeb.GameController do
   use DrakeWeb, :controller
 
   def index(conn, _params) do
