@@ -1,9 +1,24 @@
 defmodule Drake do
-  @moduledoc """
-  Drake keeps the contexts that define your domain
-  and business logic.
+  alias Drake.{Board, GameState, TroopStacks, Troop}
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  @spec new :: GameState.t()
+  def new do
+    board = Board.empty(4, TroopStacks.new())
+    troops = TroopStacks.new(troop_set())
+
+    GameState.initial(board, troops, :blue)
+  end
+
+  @spec troop_set :: list(Troop.troop_type())
+  defp troop_set do
+    [
+      :drake,
+      :clubman,
+      :clubman,
+      :monk,
+      :spearman,
+      :swordsman,
+      :archer
+    ]
+  end
 end
