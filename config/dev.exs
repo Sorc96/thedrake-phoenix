@@ -16,7 +16,7 @@ config :drake, DrakeWeb.Endpoint,
   secret_key_base: "NBE85+zdxgM5rTU2GQrjHCfydzCVqSptFV3lfCebJ0vjn+66vXlQ02Wdry0LYR1d",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch --loader:.png=file)]}
   ]
 
 # ## SSL Support

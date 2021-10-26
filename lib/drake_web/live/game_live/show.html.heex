@@ -1,0 +1,11 @@
+<div>
+  <table id="thedrake">
+    <%= for y <- 1..@game.board.dimension do %>
+      <tr>
+        <%= for x <- 1..@game.board.dimension do %>
+          <td class={if {x, y} == @selected, do: "selected"} phx-click="click-tile" phx-value-x={x} phx-value-y={y}></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>

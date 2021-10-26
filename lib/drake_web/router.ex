@@ -18,6 +18,8 @@ defmodule DrakeWeb.Router do
     pipe_through :browser
 
     get "/", GameController, :index
+
+    live "/game", GameLive.Show
   end
 
   # Other scopes may use custom stacks.
