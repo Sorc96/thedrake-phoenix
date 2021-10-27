@@ -9,6 +9,12 @@
   border: 2px solid black;
   width: 100px;
   height: 100px;
+  padding: 0;
+  line-height: 0;
+}
+
+#thedrake td.captured {
+  padding: 4px;
 }
 
 #thedrake td.selected {

@@ -1,4 +1,6 @@
 defmodule DrakeWeb.GameLive.Show do
+  alias Drake.{Board, Tile, TroopStacks}
+
   use DrakeWeb, :live_view
 
   @impl true
@@ -11,5 +13,23 @@ defmodule DrakeWeb.GameLive.Show do
     position = {String.to_integer(x), String.to_integer(y)}
 
     {:noreply, assign(socket, :selected, position)}
+  end
+
+  def handle_event("click-stack", %{"side" => side}, socket) do
+    {:noreply, assign(socket, :selected, side)}
+  end
+
+  defp captured_count(state, side) do
+    count = TroopStacks.length(state.board.captured_troops, side)
+    "Captured: #{count}"
+  end
+
+  defp tile_image(socket, state, position) do
+    tile = Board.tile_at!(state.board, position)
+    if Tile.has_troop?(tile) do
+      Routes.static_path(socket, "/images/backArcherO.png")
+    else
+      ""
+    end
   end
 end

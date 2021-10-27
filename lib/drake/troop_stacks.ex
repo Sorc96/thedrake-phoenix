@@ -29,4 +29,12 @@ defmodule Drake.TroopStacks do
   @spec empty?(t, PlayingSide.t()) :: boolean
   def empty?({blue, _}, :blue), do: Enum.empty?(blue)
   def empty?({_, orange}, :orange), do: Enum.empty?(orange)
+
+  @spec length(t, PlayingSide.t()) :: integer
+  def length({blue, orange}, side) do
+    case side do
+      :blue -> length(blue)
+      :orange -> length(orange)
+    end
+  end
 end
