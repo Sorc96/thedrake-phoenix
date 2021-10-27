@@ -26,10 +26,36 @@ defmodule DrakeWeb.GameLive.Show do
 
   defp tile_image(socket, state, position) do
     tile = Board.tile_at!(state.board, position)
+
     if Tile.has_troop?(tile) do
-      Routes.static_path(socket, "/images/backArcherO.png")
+      troop = Tile.get_troop(tile)
+      Routes.static_path(socket, image_for_troop(troop))
     else
       ""
     end
+  end
+
+  defp stack_image(socket, state, side) do
+    case TroopStacks.peek(state.troops, side) do
+      nil -> ""
+      troop -> Routes.static_path(socket, image_for_troop({troop, :front, side}))
+    end
+  end
+
+  defp image_for_troop({type, face, side}) do
+    type_name =
+      type
+      |> Atom.to_string()
+      |> String.capitalize()
+
+    face_name = Atom.to_string(face)
+
+    side_initial =
+      side
+      |> Atom.to_string()
+      |> String.upcase()
+      |> String.first()
+
+    "/images/#{face_name}#{type_name}#{side_initial}.png"
   end
 end

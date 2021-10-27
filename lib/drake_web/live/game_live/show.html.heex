@@ -10,10 +10,14 @@
       </tr>
     <% end %>
     <tr>
-      <td class={if "blue" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="blue"></td>
+      <td class={if "blue" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="blue">
+        <img src={stack_image(@socket, @game, :blue)}>
+      </td>
       <td class="captured"><%= captured_count(@game, :blue) %></td>
       <td class="captured"><%= captured_count(@game, :orange) %></td>
-      <td class={if "orange" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="orange"></td>
+      <td class={if "orange" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="orange">
+        <img src={stack_image(@socket, @game, :orange)}>
+      </td>
     </tr>
   </table>
 </div>
