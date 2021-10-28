@@ -1,22 +1,31 @@
 <div>
   <table id="thedrake">
-    <%= for y <- 1..@game.board.dimension do %>
+    <%= for y <- @game.board.dimension..1 do %>
       <tr>
-        <%= for x <- 1..@game.board.dimension do %>
-          <td class={if {x, y} == @selected, do: "selected"} phx-click="click-tile" phx-value-x={x} phx-value-y={y}>
-            <img src={tile_image(@socket, @game, {x, y})}>
+        <%= for x <- 1..@game.board.dimension, position = {x, y} do %>
+          <td
+            class={class_list(selected: position == @selected, move: @moves[position])}
+            style={"background-image:#{tile_image(@socket, @game, position)}"}
+            phx-click="click-tile" phx-value-x={x}
+            phx-value-y={y}>
           </td>
         <% end %>
       </tr>
     <% end %>
     <tr>
-      <td class={if "blue" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="blue">
-        <img src={stack_image(@socket, @game, :blue)}>
+      <td
+        class={if "blue" == @selected, do: "selected"}
+        style={"background-image:#{stack_image(@socket, @game, :blue)}"}
+        phx-click="click-stack"
+        phx-value-side="blue">
       </td>
       <td class="captured"><%= captured_count(@game, :blue) %></td>
       <td class="captured"><%= captured_count(@game, :orange) %></td>
-      <td class={if "orange" == @selected, do: "selected"} phx-click="click-stack" phx-value-side="orange">
-        <img src={stack_image(@socket, @game, :orange)}>
+      <td
+        class={if "orange" == @selected, do: "selected"}
+        style={"background-image:#{stack_image(@socket, @game, :orange)}"}
+        phx-click="click-stack"
+        phx-value-side="orange">
       </td>
     </tr>
   </table>

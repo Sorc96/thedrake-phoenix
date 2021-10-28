@@ -21,7 +21,7 @@ defmodule Drake.Leaders do
   def leader_placed?({:both_leaders, _, _}, _), do: true
 
   @spec place(t, PlayingSide.t(), Position.t()) :: t
-  def place(:no_leader_placed, side, position), do: one_leader(side, position)
+  def place(:no_leaders, side, position), do: one_leader(side, position)
 
   def place({:one_leader, leader_side, leader_position}, side, position)
       when side != leader_side do

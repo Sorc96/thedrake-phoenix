@@ -89,6 +89,7 @@ defmodule DrakeWeb do
 
       import DrakeWeb.ErrorHelpers
       import DrakeWeb.Gettext
+      import DrakeWeb.ViewHelpers
       alias DrakeWeb.Router.Helpers, as: Routes
     end
   end

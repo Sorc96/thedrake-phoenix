@@ -7,8 +7,10 @@ defmodule Drake.TroopStacks do
   def new(troops \\ []), do: {troops, troops}
 
   @spec peek(t, PlayingSide.t()) :: Troop.troop_type() | nil
-  def peek({troops, _}, :blue), do: hd(troops)
-  def peek({_, troops}, :orange), do: hd(troops)
+  def peek({[], _}, :blue), do: nil
+  def peek({[troop | _], _}, :blue), do: troop
+  def peek({_, []}, :orange), do: nil
+  def peek({_, [troop | _]}, :orange), do: troop
 
   @spec pop(t, PlayingSide.t()) :: t
   def pop({blue, orange}, side) do

@@ -124,12 +124,7 @@ defmodule Drake.GameState do
     BoardChange.origin(change) == leader_position
   end
 
-  @spec available_moves(t, Position.t()) :: list(move)
-  def available_moves(state, position) do
-    stack_moves(state) ++ board_moves(state, position)
-  end
-
-  @spec stack_moves(t) :: list(stack_move)
+  @spec stack_moves(t) :: %{Position.t() => stack_move}
   def stack_moves(%{status: :placing_leaders} = state) do
     row =
       case state.side_on_turn do
@@ -137,32 +132,31 @@ defmodule Drake.GameState do
         :orange -> state.board.dimension
       end
 
-    for tile <- state.board.tiles,
-        position = Tile.position(tile),
-        {_, ^row} = position,
-        position = Tile.position(tile),
-        do: {:stack_move, position}
+    for {_, y} = position <- Map.keys(state.board.tiles),
+        y == row,
+        into: %{},
+        do: {position, {:stack_move, position}}
   end
 
   def stack_moves(%{status: :placing_guards} = state) do
-    for tile <- state.board.tiles,
-        position = Tile.position(tile),
+    for position <- Map.keys(state.board.tiles),
         can_place_guard?(state, position),
-        do: {:stack_move, position}
+        into: %{},
+        do: {position, {:stack_move, position}}
   end
 
   def stack_moves(%{status: :middle_game} = state) do
     if TroopStacks.empty?(state.troops, state.side_on_turn) do
-      []
+      %{}
     else
-      for tile <- state.board.tiles,
-          position = Tile.position(tile),
+      for position <- Map.keys(state.board.tiles),
           can_place_from_stack?(state, position),
-          do: {:stack_move, position}
+          into: %{},
+          do: {position, {:stack_move, position}}
     end
   end
 
-  def stack_moves(%{status: :victory}), do: []
+  def stack_moves(%{status: :victory}), do: %{}
 
   @spec can_place_guard?(t, Position.t()) :: boolean
   defp can_place_guard?(state, position) do
@@ -194,7 +188,7 @@ defmodule Drake.GameState do
     end)
   end
 
-  @spec board_moves(t, Position.t()) :: list(board_move)
+  @spec board_moves(t, Position.t()) :: %{Position.t() => board_move}
   def board_moves(%{status: :middle_game} = state, position) do
     origin = Board.tile_at!(state.board, position)
 
@@ -205,11 +199,12 @@ defmodule Drake.GameState do
         TroopAction.for_troop(Troop.get_type(troop), Troop.get_face(troop)),
         &TroopAction.changes_from(&1, origin, state.side_on_turn, state.board)
       )
-      |> Enum.map(&{:board_move, &1})
+      |> Enum.map(&{BoardChange.target(&1), {:board_move, &1}})
+      |> Map.new()
     else
-      []
+      %{}
     end
   end
 
-  def board_moves(_, _), do: []
+  def board_moves(_, _), do: %{}
 end
