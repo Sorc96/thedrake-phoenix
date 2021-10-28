@@ -1,5 +1,5 @@
 defmodule Drake.TroopAction do
-  alias Drake.{Position, Tile, PlayingSide, Board, BoardChange, Troop}
+  alias Drake.{Position, PlayingSide, Board, BoardChange, Troop}
 
   @type t :: shift | slide | strike
   @type shift :: {:shift, Position.t()}
@@ -15,30 +15,27 @@ defmodule Drake.TroopAction do
   @spec strike(integer, integer) :: strike
   def strike(x, y), do: {:strike, {x, y}}
 
-  @spec changes_from(t, Tile.troop_tile(), PlayingSide.t(), Board.t()) :: list(BoardChange.t())
+  @spec changes_from(t, Position.t(), PlayingSide.t(), Board.t()) :: list(BoardChange.t())
   def changes_from({:shift, action_position}, origin, side, board) do
-    origin_position = Tile.position(origin)
-    target_position = Position.step_by_playing_side(origin_position, action_position, side)
+    target = Position.step_by_playing_side(origin, action_position, side)
 
-    case Board.available_action(board, origin_position, target_position) do
-      :step -> [BoardChange.step_only(board, origin_position, target_position)]
-      :capture -> [BoardChange.step_and_capture(board, origin_position, target_position)]
+    case Board.available_action(board, origin, target) do
+      :step -> [BoardChange.step_only(board, origin, target)]
+      :capture -> [BoardChange.step_and_capture(board, origin, target)]
       _ -> []
     end
   end
 
   def changes_from({:slide, direction} = action, origin, side, board) do
-    origin_position = Tile.position(origin)
-    next_position = Position.step_by_playing_side(origin_position, direction, side)
+    target = Position.step_by_playing_side(origin, direction, side)
 
-    case Board.available_action(board, origin_position, next_position) do
+    case Board.available_action(board, origin, target) do
       :step ->
-        target = Board.tile_at!(board, next_position)
-        change = BoardChange.step_only(board, origin_position, next_position)
+        change = BoardChange.step_only(board, origin, target)
         [change | changes_from(action, target, side, board)]
 
       :capture ->
-        [BoardChange.step_and_capture(board, origin_position, next_position)]
+        [BoardChange.step_and_capture(board, origin, target)]
 
       _ ->
         []
@@ -46,11 +43,10 @@ defmodule Drake.TroopAction do
   end
 
   def changes_from({:strike, action_position}, origin, side, board) do
-    origin_position = Tile.position(origin)
-    target_position = Position.step_by_playing_side(origin_position, action_position, side)
+    target = Position.step_by_playing_side(origin, action_position, side)
 
-    if Board.can_capture?(board, origin_position, target_position) do
-      [BoardChange.capture_only(board, origin_position, target_position)]
+    if Board.can_capture?(board, origin, target) do
+      [BoardChange.capture_only(board, origin, target)]
     else
       []
     end

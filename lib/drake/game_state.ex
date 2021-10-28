@@ -197,7 +197,7 @@ defmodule Drake.GameState do
 
       Enum.flat_map(
         TroopAction.for_troop(Troop.get_type(troop), Troop.get_face(troop)),
-        &TroopAction.changes_from(&1, origin, state.side_on_turn, state.board)
+        &TroopAction.changes_from(&1, position, state.side_on_turn, state.board)
       )
       |> Enum.map(&{BoardChange.target(&1), {:board_move, &1}})
       |> Map.new()
