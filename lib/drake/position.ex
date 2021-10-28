@@ -19,6 +19,16 @@ defmodule Drake.Position do
   @spec flip_y(t) :: t
   defp flip_y({x, y}), do: {x, -y}
 
+  @spec advance(t) :: t
+  def advance({x, y}) do
+    {change_by_sign(x), change_by_sign(y)}
+  end
+
+  @spec change_by_sign(integer) :: integer
+  def change_by_sign(0), do: 0
+  def change_by_sign(n) when n > 0, do: n + 1
+  def change_by_sign(n) when n < 0, do: n - 1
+
   @spec directions :: list(t)
   def directions do
     [{1, 0}, {-1, 0}, {0, 1}, {0, -1}]

@@ -26,13 +26,13 @@ defmodule Drake.TroopAction do
     end
   end
 
-  def changes_from({:slide, direction} = action, origin, side, board) do
+  def changes_from({:slide, direction}, origin, side, board) do
     target = Position.step_by_playing_side(origin, direction, side)
 
     case Board.available_action(board, origin, target) do
       :step ->
         change = BoardChange.step_only(board, origin, target)
-        [change | changes_from(action, target, side, board)]
+        [change | changes_from({:slide, Position.advance(direction)}, origin, side, board)]
 
       :capture ->
         [BoardChange.step_and_capture(board, origin, target)]
