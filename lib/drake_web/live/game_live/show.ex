@@ -15,10 +15,16 @@ defmodule DrakeWeb.GameLive.Show do
     changed_socket =
       case socket.assigns.moves[position] do
         nil ->
-          assign(socket,
-            selected: position,
-            moves: GameState.board_moves(socket.assigns.game, position)
-          )
+          tile = Board.tile_at!(socket.assigns.game.board, position)
+
+          if Tile.has_troop?(tile) && Board.troop_side(tile) == socket.assigns.game.side_on_turn do
+            assign(socket,
+              selected: position,
+              moves: GameState.board_moves(socket.assigns.game, position)
+            )
+          else
+            socket
+          end
 
         move ->
           assign(socket,
@@ -33,10 +39,14 @@ defmodule DrakeWeb.GameLive.Show do
 
   def handle_event("click-stack", %{"side" => side}, socket) do
     changed_socket =
-      assign(socket,
-        selected: side,
-        moves: GameState.stack_moves(socket.assigns.game)
-      )
+      if side == Atom.to_string(socket.assigns.game.side_on_turn) do
+        assign(socket,
+          selected: side,
+          moves: GameState.stack_moves(socket.assigns.game)
+        )
+    else
+      socket
+    end
 
     {:noreply, changed_socket}
   end
@@ -59,7 +69,9 @@ defmodule DrakeWeb.GameLive.Show do
 
   defp stack_image(socket, state, side) do
     case TroopStacks.peek(state.troops, side) do
-      nil -> ""
+      nil ->
+        ""
+
       troop ->
         path = Routes.static_path(socket, image_for_troop({troop, :front, side}))
         "url(#{path})"
