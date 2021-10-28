@@ -1,4 +1,4 @@
-<div>
+<section class="row">
   <table id="thedrake">
     <%= for y <- @game.board.dimension..1 do %>
       <tr>
@@ -19,8 +19,8 @@
         phx-click="click-stack"
         phx-value-side="blue">
       </td>
-      <td class="captured"><%= captured_count(@game, :blue) %></td>
       <td class="captured"><%= captured_count(@game, :orange) %></td>
+      <td class="captured"><%= captured_count(@game, :blue) %></td>
       <td
         class={if "orange" == @selected, do: "selected"}
         style={"background-image:#{stack_image(@socket, @game, :orange)}"}
@@ -29,4 +29,12 @@
       </td>
     </tr>
   </table>
-</div>
+</section>
+
+<%= if GameState.victory?(@game) do %>
+  <br>
+  <section class="row">
+    <h2 class="center"><%= winning_message(@game) %></h2>
+    <%= link "Play again", to: Routes.live_path(@socket, DrakeWeb.GameLive.Show), class: "button center" %>
+  </section>
+<% end %>

@@ -1,5 +1,5 @@
 defmodule DrakeWeb.GameLive.Show do
-  alias Drake.{Board, Tile, TroopStacks, GameState}
+  alias Drake.{Board, Tile, TroopStacks, GameState, PlayingSide}
 
   use DrakeWeb, :live_view
 
@@ -81,5 +81,15 @@ defmodule DrakeWeb.GameLive.Show do
       |> String.first()
 
     "/images/#{face_name}#{type_name}#{side_initial}.png"
+  end
+
+  defp winning_message(state) do
+    player =
+      state.side_on_turn
+      |> PlayingSide.opposite()
+      |> Atom.to_string()
+      |> String.capitalize()
+
+    "#{player} player won!"
   end
 end

@@ -207,4 +207,8 @@ defmodule Drake.GameState do
   end
 
   def board_moves(_, _), do: %{}
+
+  @spec victory?(t) :: boolean
+  def victory?(%{status: :victory}), do: true
+  def victory?(_), do: false
 end
