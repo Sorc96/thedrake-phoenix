@@ -44,9 +44,9 @@ defmodule DrakeWeb.GameLive.Show do
           selected: side,
           moves: GameState.stack_moves(socket.assigns.game)
         )
-    else
-      socket
-    end
+      else
+        socket
+      end
 
     {:noreply, changed_socket}
   end
@@ -95,13 +95,27 @@ defmodule DrakeWeb.GameLive.Show do
     "/images/#{face_name}#{type_name}#{side_initial}.png"
   end
 
-  defp winning_message(state) do
+  defp color_class(state) do
+    case side_for_message(state) do
+      :blue -> "blue"
+      :orange -> "orange"
+    end
+  end
+
+  defp status_message(state) do
     player =
-      state.side_on_turn
-      |> PlayingSide.opposite()
+      state
+      |> side_for_message()
       |> Atom.to_string()
       |> String.capitalize()
 
-    "#{player} player won!"
+    if state.status == :victory do
+      "#{player} player won!"
+    else
+      "#{player} player on turn"
+    end
   end
+
+  defp side_for_message(%{status: :victory} = state), do: PlayingSide.opposite(state.side_on_turn)
+  defp side_for_message(state), do: state.side_on_turn
 end

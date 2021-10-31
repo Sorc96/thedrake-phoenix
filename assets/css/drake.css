@@ -27,3 +27,11 @@
   background-color: rgba(200, 200, 200, 0.5);
   background-blend-mode: lighten;
 }
+
+.blue {
+  color: #00bfff;
+}
+
+.orange {
+  color: #ff7f50;
+}

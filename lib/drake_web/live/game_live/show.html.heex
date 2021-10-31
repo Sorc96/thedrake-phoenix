@@ -31,10 +31,13 @@
   </table>
 </section>
 
+<br>
+<section class="row">
+  <h2 class={"center #{color_class(@game)}"}><%= status_message(@game) %></h2>
+</section>
 <%= if GameState.victory?(@game) do %>
   <br>
   <section class="row">
-    <h2 class="center"><%= winning_message(@game) %></h2>
     <%= link "Play again", to: Routes.live_path(@socket, DrakeWeb.GameLive.Show), class: "button center" %>
   </section>
 <% end %>
