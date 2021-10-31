@@ -79,17 +79,13 @@ defmodule DrakeWeb.GameLive.Show do
   end
 
   defp image_for_troop({type, face, side}) do
-    type_name =
-      type
-      |> Atom.to_string()
-      |> String.capitalize()
+    type_name = side_name(type)
 
     face_name = Atom.to_string(face)
 
     side_initial =
       side
-      |> Atom.to_string()
-      |> String.upcase()
+      |> side_name()
       |> String.first()
 
     "/images/#{face_name}#{type_name}#{side_initial}.png"
@@ -106,14 +102,19 @@ defmodule DrakeWeb.GameLive.Show do
     player =
       state
       |> side_for_message()
-      |> Atom.to_string()
-      |> String.capitalize()
+      |> side_name()
 
     if state.status == :victory do
       "#{player} player won!"
     else
       "#{player} player on turn"
     end
+  end
+
+  defp side_name(side) do
+    side
+    |> Atom.to_string()
+    |> String.capitalize()
   end
 
   defp side_for_message(%{status: :victory} = state), do: PlayingSide.opposite(state.side_on_turn)
