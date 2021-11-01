@@ -3,41 +3,24 @@
     <%= for y <- @game.board.dimension..1 do %>
       <tr>
         <%= for x <- 1..@game.board.dimension, position = {x, y} do %>
-          <td
-            class={class_list(selected: position == @selected, move: @moves[position])}
-            style={"background-image:#{tile_image(@socket, @game, position)}"}
-            phx-click="click-tile" phx-value-x={x}
-            phx-value-y={y}>
-          </td>
+          <.tile
+            game={@game}
+            x={x}
+            y={y}
+            selected={@selected == position}
+            has_move={!is_nil(@moves[position])}
+            socket={@socket}/>
         <% end %>
       </tr>
     <% end %>
     <tr>
-      <td
-        class={if "blue" == @selected, do: "selected"}
-        style={"background-image:#{stack_image(@socket, @game, :blue)}"}
-        phx-click="click-stack"
-        phx-value-side="blue">
-      </td>
-      <td class="captured"><%= captured_count(@game, :orange) %></td>
-      <td class="captured"><%= captured_count(@game, :blue) %></td>
-      <td
-        class={if "orange" == @selected, do: "selected"}
-        style={"background-image:#{stack_image(@socket, @game, :orange)}"}
-        phx-click="click-stack"
-        phx-value-side="orange">
-      </td>
+      <.stack game={@game} side={:blue} selected={@selected == "blue"} socket={@socket}/>
+      <.captured game={@game} side={:orange}/>
+      <.captured game={@game} side={:blue}/>
+      <.stack game={@game} side={:orange} selected={@selected == "orange"} socket={@socket}/>
     </tr>
   </table>
 </section>
 
 <br>
-<section class="row">
-  <h2 class={"center #{color_class(@game)}"}><%= status_message(@game) %></h2>
-</section>
-<%= if GameState.victory?(@game) do %>
-  <br>
-  <section class="row">
-    <%= link "Play again", to: Routes.live_path(@socket, DrakeWeb.GameLive.Show), class: "button center" %>
-  </section>
-<% end %>
+<.status game={@game} socket={@socket}/>
