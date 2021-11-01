@@ -1,5 +1,5 @@
 defmodule DrakeWeb.GameLive.Components do
-  alias Drake.{TroopStacks, Board, Tile, GameState, PlayingSide}
+  alias Drake.{TroopStacks, Tile, GameState, PlayingSide}
   alias DrakeWeb.Router.Helpers, as: Routes
 
   import Phoenix.HTML.Link
@@ -25,13 +25,15 @@ defmodule DrakeWeb.GameLive.Components do
   end
 
   def tile(assigns) do
+    {x, y} = Tile.position(assigns.tile)
+
     ~H"""
     <td
       class={class_list(selected: @selected, move: @has_move)}
-      style={"background-image:#{tile_image(@socket, @game, {@x, @y})}"}
+      style={"background-image:#{tile_image(@socket, @tile)}"}
       phx-click="click-tile"
-      phx-value-x={@x}
-      phx-value-y={@y}>
+      phx-value-x={x}
+      phx-value-y={y}>
     </td>
     """
   end
@@ -65,9 +67,7 @@ defmodule DrakeWeb.GameLive.Components do
     end
   end
 
-  defp tile_image(socket, game, position) do
-    tile = Board.tile_at!(game.board, position)
-
+  defp tile_image(socket, tile) do
     if Tile.has_troop?(tile) do
       troop = Tile.get_troop(tile)
       "url(#{Routes.static_path(socket, image_for_troop(troop))})"

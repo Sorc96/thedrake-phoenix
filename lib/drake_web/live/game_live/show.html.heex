@@ -4,9 +4,7 @@
       <tr>
         <%= for x <- 1..@game.board.dimension, position = {x, y} do %>
           <.tile
-            game={@game}
-            x={x}
-            y={y}
+            tile={Board.tile_at!(@game.board, position)}
             selected={@selected == position}
             has_move={!is_nil(@moves[position])}
             socket={@socket}/>
