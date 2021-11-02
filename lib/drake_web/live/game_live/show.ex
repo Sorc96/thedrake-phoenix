@@ -35,41 +35,25 @@ defmodule DrakeWeb.GameLive.Show do
     if on_turn?(socket) do
       target = {String.to_integer(x), String.to_integer(y)}
 
-      changed_socket =
-        if is_nil(socket.assigns.selected) do
-          try_select_tile(socket, target)
-        else
+      case socket.assigns.moves[target] do
+        nil ->
+          {:noreply, try_select_tile(socket, target)}
+
+        _ ->
           origin = parse_origin(socket)
-
-          case GameServer.perform_move(socket.assigns.identifier, origin, target) do
-            {:ok, _} ->
-              DrakeWeb.Endpoint.broadcast(socket.assigns.identifier, "turn", nil)
-              socket
-
-            {:error, :invalid_move} ->
-              try_select_tile(socket, target)
-          end
-        end
-
-      {:noreply, changed_socket}
+          {:ok, _} = GameServer.perform_move(socket.assigns.identifier, origin, target)
+          DrakeWeb.Endpoint.broadcast(socket.assigns.identifier, "turn", nil)
+          {:noreply, socket}
+      end
     else
       {:noreply, socket}
     end
   end
 
   def handle_event("click-stack", %{"side" => side}, socket) do
-    if on_turn?(socket) do
-      changed_socket =
-        if side == Atom.to_string(socket.assigns.game.side_on_turn) do
-          assign(socket,
-            selected: side,
-            moves: GameState.stack_moves(socket.assigns.game)
-          )
-        else
-          socket
-        end
-
-      {:noreply, changed_socket}
+    if on_turn?(socket) && side == Atom.to_string(socket.assigns.game.side_on_turn) do
+      moves = GameState.stack_moves(socket.assigns.game)
+      {:noreply, assign(socket, selected: side, moves: moves)}
     else
       {:noreply, socket}
     end
