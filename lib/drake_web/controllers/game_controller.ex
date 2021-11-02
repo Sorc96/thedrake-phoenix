@@ -15,7 +15,7 @@ defmodule DrakeWeb.GameController do
         redirect(conn, to: path)
       :error ->
         conn
-        |> put_flash(:alert, "No game available for the given identifier.")
+        |> put_flash(:error, "No game available for the given identifier.")
         |> redirect(to: Routes.game_path(conn, :index))
     end
   end
