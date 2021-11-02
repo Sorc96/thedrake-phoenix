@@ -34,11 +34,10 @@ defmodule DrakeWeb.GameLive.Show do
   def handle_event("click-tile", %{"x" => x, "y" => y}, socket) do
     if on_turn?(socket) do
       target = {String.to_integer(x), String.to_integer(y)}
-      game = socket.assigns.game
 
       changed_socket =
         if is_nil(socket.assigns.selected) do
-          try_select_tile(socket, game, target)
+          try_select_tile(socket, target)
         else
           origin = parse_origin(socket)
 
@@ -46,7 +45,9 @@ defmodule DrakeWeb.GameLive.Show do
             {:ok, _} ->
               DrakeWeb.Endpoint.broadcast(socket.assigns.identifier, "turn", nil)
               socket
-            {:error, :invalid_move} -> try_select_tile(socket, game, target)
+
+            {:error, :invalid_move} ->
+              try_select_tile(socket, target)
           end
         end
 
@@ -80,7 +81,8 @@ defmodule DrakeWeb.GameLive.Show do
     {:noreply, assign(socket, game: new_state, selected: nil, moves: %{})}
   end
 
-  defp try_select_tile(socket, game, target) do
+  defp try_select_tile(socket, target) do
+    game = socket.assigns.game
     tile = Board.tile_at!(game.board, target)
 
     if Tile.has_troop?(tile) && Board.troop_side(tile) == game.side_on_turn do
