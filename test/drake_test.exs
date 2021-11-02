@@ -43,6 +43,7 @@ defmodule DrakeTest do
     assert result.leaders == {:one_leader, :blue, {3, 4}}
     assert TroopStacks.length(result.board.captured_troops, :blue) == 3
     assert TroopStacks.length(result.board.captured_troops, :orange) == 7
+    assert result.troops == {[:swordsman, :archer], []}
 
     drake =
       result.board

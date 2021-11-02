@@ -13,9 +13,10 @@ defmodule Drake.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Drake.PubSub},
       # Start the Endpoint (http/https)
-      DrakeWeb.Endpoint
+      DrakeWeb.Endpoint,
       # Start a worker by calling: Drake.Worker.start_link(arg)
       # {Drake.Worker, arg}
+      Drake.GameServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
