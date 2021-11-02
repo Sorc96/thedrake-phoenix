@@ -11,23 +11,16 @@ defmodule DrakeWeb.GameLive.Show do
     end
 
     {:ok, game} = GameServer.find_game(identifier)
+    side = String.to_existing_atom(side_name)
 
-    side =
-      case side_name do
-        "blue" -> :blue
-        "orange" -> :orange
-      end
-
-    changed_socket =
-      assign(socket,
-        identifier: identifier,
-        side: side,
-        game: game,
-        selected: nil,
-        moves: %{}
-      )
-
-    {:ok, changed_socket}
+    {:ok,
+     assign(socket,
+       identifier: identifier,
+       side: side,
+       game: game,
+       selected: nil,
+       moves: %{}
+     )}
   end
 
   @impl true
