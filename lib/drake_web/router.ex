@@ -18,7 +18,9 @@ defmodule DrakeWeb.Router do
     pipe_through :browser
 
     get "/", GameController, :index
+    post "/join", GameController, :join
 
+    live "/lobby", GameLive.Lobby
     live "/game", GameLive.Show
   end
 

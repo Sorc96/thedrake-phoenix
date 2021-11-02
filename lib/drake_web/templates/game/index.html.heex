@@ -1,3 +1,10 @@
 <section class="row">
-  <%= link "Start a game", to: Routes.live_path(@conn, DrakeWeb.GameLive.Show), class: "button center" %>
+  <%= link "Start a new game", to: Routes.live_path(@conn, DrakeWeb.GameLive.Lobby), class: "button center" %>
+</section>
+<br>
+<section class="row">
+  <%= form_for :game, Routes.game_path(@conn, :join), fn f -> %>
+    <%= text_input f, :identifier %>
+    <%= submit "Connect to an existing game" %>
+  <% end %>
 </section>

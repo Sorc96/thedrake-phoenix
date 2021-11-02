@@ -46,7 +46,7 @@ defmodule DrakeWeb.GameLive.Components do
     <%= if GameState.victory?(@game) do %>
       <br>
       <section class="row">
-        <%= link "Play again", to: Routes.live_path(@socket, DrakeWeb.GameLive.Show), class: "button center" %>
+        <%= link "Play again", to: Routes.live_path(@socket, DrakeWeb.GameLive.Lobby), class: "button center" %>
       </section>
     <% end %>
     """
