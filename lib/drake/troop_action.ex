@@ -37,7 +37,7 @@ defmodule Drake.TroopAction do
       :capture ->
         [BoardChange.step_and_capture(board, origin, target)]
 
-      _ ->
+      nil ->
         []
     end
   end
@@ -53,45 +53,21 @@ defmodule Drake.TroopAction do
   end
 
   @spec for_troop(Troop.troop_type(), Troop.face()) :: list(t)
-  def for_troop(:drake, face) do
-    case face do
-      :front -> [slide(1, 0), slide(-1, 0)]
-      :back -> [slide(0, 1), slide(0, -1)]
-    end
-  end
+  def for_troop(:drake, :front), do: [slide(1, 0), slide(-1, 0)]
+  def for_troop(:drake, :back), do: [slide(0, 1), slide(0, -1)]
 
-  def for_troop(:clubman, face) do
-    case face do
-      :front -> [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
-      :back -> [shift(1, 1), shift(-1, -1), shift(-1, 1), shift(1, -1)]
-    end
-  end
+  def for_troop(:clubman, :front), do: [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
+  def for_troop(:clubman, :back), do: [shift(1, 1), shift(-1, -1), shift(-1, 1), shift(1, -1)]
 
-  def for_troop(:monk, face) do
-    case face do
-      :front -> [slide(1, 1), slide(-1, -1), slide(-1, 1), slide(1, -1)]
-      :back -> [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
-    end
-  end
+  def for_troop(:monk, :front), do: [slide(1, 1), slide(-1, -1), slide(-1, 1), slide(1, -1)]
+  def for_troop(:monk, :back), do: [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
 
-  def for_troop(:spearman, face) do
-    case face do
-      :front -> [shift(0, 1), strike(1, 2), strike(-1, 2)]
-      :back -> [shift(1, 1), shift(-1, 1), shift(0, -1)]
-    end
-  end
+  def for_troop(:spearman, :front), do: [shift(0, 1), strike(1, 2), strike(-1, 2)]
+  def for_troop(:spearman, :back), do: [shift(1, 1), shift(-1, 1), shift(0, -1)]
 
-  def for_troop(:swordsman, face) do
-    case face do
-      :front -> [strike(1, 0), strike(-1, 0), strike(0, 1), strike(0, -1)]
-      :back -> [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
-    end
-  end
+  def for_troop(:swordsman, :front), do: [strike(1, 0), strike(-1, 0), strike(0, 1), strike(0, -1)]
+  def for_troop(:swordsman, :back), do: [shift(1, 0), shift(-1, 0), shift(0, 1), shift(0, -1)]
 
-  def for_troop(:archer, face) do
-    case face do
-      :front -> [shift(1, 0), shift(-1, 0), shift(0, -1)]
-      :back -> [shift(0, 1), strike(-1, 1), strike(1, 1), strike(0, 2)]
-    end
-  end
+  def for_troop(:archer, :front), do: [shift(1, 0), shift(-1, 0), shift(0, -1)]
+  def for_troop(:archer, :back), do: [shift(0, 1), strike(-1, 1), strike(1, 1), strike(0, 2)]
 end
