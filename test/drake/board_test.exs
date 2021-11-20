@@ -34,7 +34,7 @@ defmodule Drake.BoardTest do
       combinations = for a <- positions, b <- positions, do: {a, b}
 
       assert Enum.all?(combinations, fn {a, b} ->
-        is_nil(Board.available_action(board, a, b))
+        is_nil(Board.available_action({board, a, b}))
       end)
     end
   end

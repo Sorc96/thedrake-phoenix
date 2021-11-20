@@ -6,6 +6,7 @@ defmodule Drake.Board do
           tiles: %{Position.t() => Tile.t()},
           captured_troops: TroopStacks.t()
         }
+   @type change :: {t, Position.t(), Position.t()}
 
   @spec empty(integer) :: t
   def empty(dimension, captured_troops \\ TroopStacks.new()) do
@@ -54,22 +55,22 @@ defmodule Drake.Board do
     end
   end
 
-  @spec available_action(t, Position.t(), Position.t()) :: nil | :step | :capture
-  def available_action(board, origin, target) do
+  @spec available_action(change) :: nil | :step | :capture
+  def available_action(change) do
     cond do
-      can_step?(board, origin, target) -> :step
-      can_capture?(board, origin, target) -> :capture
+      can_step?(change) -> :step
+      can_capture?(change) -> :capture
       true -> nil
     end
   end
 
-  @spec can_step?(t, Position.t(), Position.t()) :: boolean
-  def can_step?(board, origin, target) do
+  @spec can_step?(change) :: boolean
+  defp can_step?({board, origin, target}) do
     can_take_from?(board, origin) && can_place_on?(board, target)
   end
 
-  @spec can_capture?(t, Position.t(), Position.t()) :: boolean
-  def can_capture?(board, origin, target) do
+  @spec can_capture?(change) :: boolean
+  defp can_capture?({board, origin, target}) do
     with {:ok, origin_tile} <- tile_at(board, origin),
          {:ok, target_tile} <- tile_at(board, target),
          true <- Tile.has_troop?(origin_tile),

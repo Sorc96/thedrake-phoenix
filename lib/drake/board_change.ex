@@ -4,18 +4,18 @@ defmodule Drake.BoardChange do
   @type t :: %{type: change_type, board: Board.t(), origin: Position.t(), target: Position.t()}
   @type change_type :: :step_only | :capture_only | :step_and_capture
 
-  @spec step_only(Board.t(), Position.t(), Position.t()) :: t
-  def step_only(board, origin, target) do
+  @spec step_only(Board.change()) :: t
+  def step_only({board, origin, target}) do
     %{type: :step_only, board: board, origin: origin, target: target}
   end
 
-  @spec capture_only(Board.t(), Position.t(), Position.t()) :: t
-  def capture_only(board, origin, target) do
+  @spec capture_only(Board.change()) :: t
+  def capture_only({board, origin, target}) do
     %{type: :capture_only, board: board, origin: origin, target: target}
   end
 
-  @spec step_and_capture(Board.t(), Position.t(), Position.t()) :: t
-  def step_and_capture(board, origin, target) do
+  @spec step_and_capture(Board.change()) :: t
+  def step_and_capture({board, origin, target}) do
     %{type: :step_and_capture, board: board, origin: origin, target: target}
   end
 

@@ -1,56 +1,42 @@
 defmodule Drake.TroopAction do
   alias Drake.{Position, PlayingSide, Board, BoardChange, Troop}
 
-  @type t :: shift | slide | strike
-  @type shift :: {:shift, Position.t()}
-  @type slide :: {:slide, Position.t()}
-  @type strike :: {:strike, Position.t()}
+  @type t :: {action_type, Position.t()}
+  @type action_type :: :shift | :slide | :strike
 
-  @spec shift(integer, integer) :: shift
+  @spec shift(integer, integer) :: t
   def shift(x, y), do: {:shift, {x, y}}
 
-  @spec slide(integer, integer) :: slide
+  @spec slide(integer, integer) :: t
   def slide(x, y), do: {:slide, {x, y}}
 
-  @spec strike(integer, integer) :: strike
+  @spec strike(integer, integer) :: t
   def strike(x, y), do: {:strike, {x, y}}
 
   @spec changes_from(t, Position.t(), PlayingSide.t(), Board.t()) :: list(BoardChange.t())
-  def changes_from({:shift, action_position}, origin, side, board) do
-    target = Position.step_by_playing_side(origin, action_position, side)
+  def changes_from({action_type, position} = action, origin, side, board) do
+    target = Position.step_by_playing_side(origin, position, side)
+    change = {board, origin, target}
 
-    case Board.available_action(board, origin, target) do
-      :step -> [BoardChange.step_only(board, origin, target)]
-      :capture -> [BoardChange.step_and_capture(board, origin, target)]
-      _ -> []
+    case Board.available_action(change) do
+      :step -> step_changes(action, change, side)
+      :capture -> capture_changes(action_type, change)
+      nil -> []
     end
   end
 
-  def changes_from({:slide, direction}, origin, side, board) do
-    target = Position.step_by_playing_side(origin, direction, side)
-
-    case Board.available_action(board, origin, target) do
-      :step ->
-        change = BoardChange.step_only(board, origin, target)
-        [change | changes_from({:slide, Position.advance(direction)}, origin, side, board)]
-
-      :capture ->
-        [BoardChange.step_and_capture(board, origin, target)]
-
-      nil ->
-        []
-    end
+  @spec step_changes(t, Board.change(), PlayingSide.t()) :: list(BoardChange.t())
+  defp step_changes({:shift, _}, change, _), do: [BoardChange.step_only(change)]
+  defp step_changes({:slide, direction}, {board, origin, _} = change, side) do
+    change = BoardChange.step_only(change)
+    [change | changes_from({:slide, Position.advance(direction)}, origin, side, board)]
   end
+  defp step_changes({:strike, _},  _, _), do: []
 
-  def changes_from({:strike, action_position}, origin, side, board) do
-    target = Position.step_by_playing_side(origin, action_position, side)
-
-    if Board.can_capture?(board, origin, target) do
-      [BoardChange.capture_only(board, origin, target)]
-    else
-      []
-    end
-  end
+  @spec capture_changes(action_type, Board.change()) :: list(BoardChange.t())
+  defp capture_changes(:shift, change), do: [BoardChange.step_and_capture(change)]
+  defp capture_changes(:slide, change), do: [BoardChange.step_and_capture(change)]
+  defp capture_changes(:strike, change), do: [BoardChange.capture_only(change)]
 
   @spec for_troop(Troop.troop_type(), Troop.face()) :: list(t)
   def for_troop(:drake, :front), do: [slide(1, 0), slide(-1, 0)]
