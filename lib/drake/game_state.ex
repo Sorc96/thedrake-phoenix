@@ -92,8 +92,7 @@ defmodule Drake.GameState do
         %{new_state | status: :victory, leaders: new_leaders}
 
       leader_moving?(state, change) ->
-        target = BoardChange.target(change)
-        new_leaders = Leaders.move(state.leaders, state.side_on_turn, target)
+        new_leaders = Leaders.move(state.leaders, state.side_on_turn, change.target)
         %{new_state | leaders: new_leaders}
 
       true ->
@@ -114,14 +113,14 @@ defmodule Drake.GameState do
   def winning_change?(state, change) do
     opponent = PlayingSide.opposite(state.side_on_turn)
 
-    Leaders.leader_on?(state.leaders, opponent, BoardChange.target(change))
+    Leaders.leader_on?(state.leaders, opponent, change.target)
   end
 
   @spec leader_moving?(t, BoardChange.t()) :: boolean
   defp leader_moving?(state, change) do
     leader_position = Leaders.position(state.leaders, state.side_on_turn)
 
-    BoardChange.origin(change) == leader_position
+    change.origin == leader_position
   end
 
   @spec stack_moves(t) :: %{Position.t() => stack_move}
@@ -199,7 +198,7 @@ defmodule Drake.GameState do
         TroopAction.for_troop(Troop.get_type(troop), Troop.get_face(troop)),
         &TroopAction.changes_from(&1, position, state.side_on_turn, state.board)
       )
-      |> Enum.map(&{BoardChange.target(&1), {:board_move, &1}})
+      |> Enum.map(&{&1.target, {:board_move, &1}})
       |> Map.new()
     else
       %{}
