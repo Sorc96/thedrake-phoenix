@@ -20,11 +20,14 @@ defmodule Drake.TroopStacks do
     end
   end
 
-  @spec add(t, Troop.troop_type(), PlayingSide.t()) :: t
-  def add({blue, orange}, troop, side) do
+  @spec add(t, Troop.t()) :: t
+  def add({blue, orange}, troop) do
+    side = Troop.get_side(troop)
+    troop_type = Troop.get_type(troop)
+
     case side do
-      :blue -> {[troop | blue], orange}
-      :orange -> {blue, [troop | orange]}
+      :blue -> {[troop_type | blue], orange}
+      :orange -> {blue, [troop_type | orange]}
     end
   end
 

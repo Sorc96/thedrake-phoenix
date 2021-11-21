@@ -94,9 +94,7 @@ defmodule Drake.Board do
   def with_capture_and_tiles(board, capture, tiles) do
     board
     |> with_tiles(tiles)
-    |> Map.update!(:captured_troops, fn stacks ->
-      TroopStacks.add(stacks, Troop.get_type(capture), Troop.get_side(capture))
-    end)
+    |> Map.update!(:captured_troops, &TroopStacks.add(&1, capture))
   end
 
   @spec troop_side(Tile.t()) :: PlayingSide.t()

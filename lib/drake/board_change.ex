@@ -5,37 +5,39 @@ defmodule Drake.BoardChange do
   @type change_type :: :step_only | :capture_only | :step_and_capture
 
   @spec step_only(Board.change()) :: t
-  def step_only({board, origin, target}) do
-    %{type: :step_only, board: board, origin: origin, target: target}
+  def step_only(change) do
+    new(change, :step_only)
   end
 
   @spec capture_only(Board.change()) :: t
-  def capture_only({board, origin, target}) do
-    %{type: :capture_only, board: board, origin: origin, target: target}
+  def capture_only(change) do
+    new(change, :capture_only)
   end
 
   @spec step_and_capture(Board.change()) :: t
-  def step_and_capture({board, origin, target}) do
-    %{type: :step_and_capture, board: board, origin: origin, target: target}
+  def step_and_capture(change) do
+    new(change, :step_and_capture)
+  end
+
+  @spec new(Board.change(), change_type) :: t
+  defp new({board, origin, target}, type) do
+    %{type: type, board: board, origin: origin, target: target}
   end
 
   @spec result_board(t) :: Board.t()
+  def result_board(%{type: :step_only} = change) do
+    Board.with_tiles(change.board, changed_tiles(change))
+  end
+
   def result_board(change) do
-    if change.type == :step_only do
-      Board.with_tiles(change.board, changed_tiles(change))
-    else
-      Board.with_capture_and_tiles(change.board, targeted_troop(change), changed_tiles(change))
-    end
+    Board.with_capture_and_tiles(
+      change.board,
+      targeted_troop(change),
+      changed_tiles(change)
+    )
   end
 
   @spec changed_tiles(t) :: list(Tile.t())
-  defp changed_tiles(%{type: :step_only} = change) do
-    [
-      Tile.empty(change.origin),
-      Tile.with_troop(change.target, troop_after_action(change))
-    ]
-  end
-
   defp changed_tiles(%{type: :capture_only} = change) do
     [
       Tile.with_troop(change.origin, troop_after_action(change)),
@@ -43,7 +45,7 @@ defmodule Drake.BoardChange do
     ]
   end
 
-  defp changed_tiles(%{type: :step_and_capture} = change) do
+  defp changed_tiles(change) do
     [
       Tile.empty(change.origin),
       Tile.with_troop(change.target, troop_after_action(change))
