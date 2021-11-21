@@ -34,7 +34,7 @@ defmodule DrakeWeb.GameLive.Show do
 
         _ ->
           origin = parse_origin(socket)
-          {:ok, _} = GameServer.perform_move(socket.assigns.identifier, origin, target)
+          :ok = GameServer.perform_move(socket.assigns.identifier, origin, target)
           DrakeWeb.Endpoint.broadcast(socket.assigns.identifier, "turn", nil)
           {:noreply, socket}
       end

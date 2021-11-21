@@ -25,9 +25,9 @@ defmodule Drake.Position do
   end
 
   @spec change_by_sign(integer) :: integer
-  def change_by_sign(0), do: 0
-  def change_by_sign(n) when n > 0, do: n + 1
-  def change_by_sign(n) when n < 0, do: n - 1
+  defp change_by_sign(0), do: 0
+  defp change_by_sign(n) when n > 0, do: n + 1
+  defp change_by_sign(n) when n < 0, do: n - 1
 
   @spec directions :: list(t)
   def directions do

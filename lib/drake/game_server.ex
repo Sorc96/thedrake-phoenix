@@ -12,19 +12,9 @@ defmodule Drake.GameServer do
   end
 
   def perform_move(identifier, origin, target) do
-    case find_game(identifier) do
-      {:ok, game} ->
-        case Drake.perform_move(game, origin, target) do
-          :error ->
-            {:error, :invalid_move}
-
-          {:ok, new_state} ->
-            GenServer.call(__MODULE__, {:put, identifier, new_state})
-            {:ok, new_state}
-        end
-
-      :error ->
-        {:error, :game_not_found}
+    with {:ok, game} <- find_game(identifier),
+         {:ok, new_state} <- Drake.perform_move(game, origin, target) do
+      GenServer.call(__MODULE__, {:put, identifier, new_state})
     end
   end
 
